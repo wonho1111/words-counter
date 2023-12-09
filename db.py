@@ -28,21 +28,21 @@ df = pd.read_sql_query(query, conn)
 # 데이터프레임에서 특정 열의 데이터 가져오기
 text_data = df['video_title'].str.lower().str.cat(sep=' ')
 
-# 정규 표현식을 사용하여 단어 추출
-words = re.findall(r'\b\w+\b', text_data)
+# 정규 표현식을 사용하여 단어 추출 (여러 단어로 이루어진 패턴 선택)
+genre_patterns = ['r&b', 'hiphop', 'jazz', '락']  # Add more genres as needed
+pattern = '|'.join(rf'\b{genre}\b' for genre in genre_patterns)
+
+selected_words = re.findall(pattern, text_data)
 
 # Counter를 사용하여 단어 빈도수 계산
-word_counts = Counter(words)
-
-# 가장 많이 나온 단어 순서대로 정렬
-sorted_word_counts = dict(sorted(word_counts.items(), key=lambda item: item[1], reverse=True))
+word_counts = Counter(selected_words)
 
 # 시각화: 막대 그래프
-plt.figure(figsize=(10, 6))
-plt.bar(sorted_word_counts.keys(), sorted_word_counts.values())
-plt.xlabel('단어')
+plt.figure(figsize=(8, 6))
+plt.bar(word_counts.keys(), word_counts.values())
+plt.xlabel('장르')
 plt.ylabel('빈도수')
-plt.title('가장 많이 나온 단어 순위')
+plt.title('장르별 빈도수')
 plt.xticks(rotation=45, ha='right')  # X 축 레이블 회전
 plt.tight_layout()
 plt.show()
